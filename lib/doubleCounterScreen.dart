@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './model/loginState.dart';
 
 class DoubleCounterScreen extends StatelessWidget {
   final int counter;
@@ -19,32 +20,78 @@ class DoubleCounterScreen extends StatelessWidget {
       children: <Widget>[
         Expanded(
             child: CounterText(
-              onPressed: increment,
-             counter: counter,
+              isIncrementer: true,
+          onPressed: increment,
+          counter: counter,
         )),
         Expanded(
             child: CounterText(
-              onPressed: decrement,
-              counter: counter,
+              isIncrementer: false,
+          onPressed: decrement,
+          counter: counter,
         ))
       ],
     );
   }
 }
 
-class CounterText extends StatelessWidget {
+class CounterText extends StatefulWidget {
   final Function onPressed;
   final int counter;
+  final bool isIncrementer;
 
-  const CounterText({Key key, this.onPressed, @required this.counter})
-      : super(key: key);
+  const CounterText({
+    Key key,
+    this.isIncrementer,
+    this.onPressed,
+    @required this.counter,
+  }) : super(key: key);
 
+  @override
+  _CounterTextState createState() => _CounterTextState();
+}
+
+class _CounterTextState extends State<CounterText>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
+  Tween<double> textSizeAnimation;
+  @override
+  void initState() {
+    super.initState();
+    textSizeAnimation = Tween(begin: 20.0, end: 50.0);
+    controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 1),
+    )
+      ..addStatusListener((AnimationStatus f) {
+        if (f == AnimationStatus.completed) {
+          controller.reverse();
+        }
+        if (f == AnimationStatus.dismissed) {
+          controller.forward();
+        }
+      })
+      ..addListener(() {
+        setState(() {});
+      });
+    
+    textSizeAnimation.animate(controller);
+    controller.forward();
+  }
+
+  int get counter => widget.counter;
+  Function get onPressed => widget.onPressed;
+  bool get isIncrementer => widget.isIncrementer;
   @override
   Widget build(BuildContext context) {
     return Center(
       child: RaisedButton(
+        color: isIncrementer==true?Colors.green:Colors.red,
         onPressed: onPressed,
-        child: Text("$counter"),
+        child: Text(
+          "$counter",
+          style: TextStyle(fontSize: 50 * controller.value),
+        ),
       ),
     );
   }

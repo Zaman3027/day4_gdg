@@ -1,0 +1,1 @@
+enum LoginState{loggedIn,loggedOut,loggedInPro}
