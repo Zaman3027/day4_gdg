@@ -26,7 +26,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             LoginStateButton(
               loginState: _loginState,
@@ -49,7 +49,26 @@ class _MyAppState extends State<MyApp> {
                 });
               },
             ),
+            Builder(
+              builder: (BuildContext context) => RaisedButton(
+                    onPressed: () {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text("Login State chnaged to $_loginState"),
+                      ));
+                    },
+                    child: Text("Get Status"),
+                  ),
+            )
           ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              _counter = 0;
+            });
+          },
+          child: Icon(Icons.restore),
         ),
       ),
     );
@@ -81,16 +100,20 @@ class LoginStateButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlatButton(
-      onPressed: (){
+      onPressed: () {
         changeLoginSate(getNewLoginSate());
       },
-      child: loginState ==LoginState.loggedInPro?Icon(
-        Icons.star,
-        size: 25,
-      ):Text(
-        loginState==LoginState.loggedOut?"LOG in":"Subscribe to Pro",
-        style: TextStyle(fontSize: 25),
-      ),
+      child: loginState == LoginState.loggedInPro
+          ? Icon(
+              Icons.star,
+              size: 25,
+            )
+          : Text(
+              loginState == LoginState.loggedOut
+                  ? "LOG in"
+                  : "Subscribe to Pro",
+              style: TextStyle(fontSize: 25),
+            ),
     );
   }
 }
